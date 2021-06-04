@@ -1,7 +1,7 @@
 import mongoose from "mongoose"
 import createError from "http-errors"
 
-const { Schema, Model } = mongoose
+const { Schema, model } = mongoose
 
 const ProductSchema = new Schema(
     {
@@ -38,4 +38,4 @@ ProductSchema.static("getreviews", async function (id) {
 })
 
 
-export default new Model ("Product", ProductSchema)
+export default model("Product", ProductSchema)
