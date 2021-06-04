@@ -52,39 +52,5 @@ shoppingRouter.get("/cart", async (req, res, next) => {
 	}
 });
 
-// commentRouter.post("/post/:id", async (req, res, next) => {
-// 	try {
-// 		const newComment = await commentModel(req.body);
-// 		const comment = await newComment.save();
-// 		await postModel.findByIdAndUpdate(req.params.id, {
-// 			$push: {comments: comment._id},
-// 		});
-// 		res.send(comment);
-// 	} catch (error) {
-// 		console.log(error);
-// 	}
-// });
 
 export default shoppingRouter;
-
-// CartSchema.static("incrementCartQuantity", async function (id, asin, quantity) {
-// 	await this.findOneAndUpdate(
-// 		{
-// 			ownerId: mongoose.Types.ObjectId(id),
-// 			status: "active",
-// 			"products.asin": asin,
-// 		},
-// 		{$inc: {"products.$.quantity": quantity}},
-// 		{upsert: true}
-// 	);
-// });
-
-// CartSchema.static("addBookToCart", async function (id, book) {
-// 	await this.findOneAndUpdate(
-// 		{ownerId: mongoose.Types.ObjectId(id), status: "active"},
-// 		{
-// 			$addToSet: {products: book},
-// 		},
-// 		{upsert: true}
-// 	);
-// });
