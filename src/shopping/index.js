@@ -5,16 +5,19 @@ const shoppingRouter = express.Router();
 
 shoppingRouter.post("/cart/add", async (req, res, next) => {
 	try {
-		const shoppingcart = await shopModel(req.body);
-		const check = await shopModel.findById(req.body._id);
+		const product = await shopModel(req.body);
+		const shoppingcart = product.toObject();
+		const check = await shopModel.findOne({
+			product_id: shoppingcart.product_id,
+        });
 		if (check) {
 			await shopModel.findOneAndUpdate(
-				{_id: req.body._id},
+				{product_id: shoppingcart.product_id},
 				{$inc: {quantity: 1}}
 			);
 			res.send("updated");
 		} else {
-			const item = await shoppingcart.save();
+			const item = await product.save();
 			console.log(item);
 			res.send(item);
 		}
@@ -25,32 +28,36 @@ shoppingRouter.post("/cart/add", async (req, res, next) => {
 
 shoppingRouter.post("/cart/remove", async (req, res, next) => {
 	try {
-		const check = await shopModel.findById(req.body._id);
+		const product = await shopModel(req.body);
+		const shoppingcart = product.toObject();
+		const check = await shopModel.findOne({
+			product_id: shoppingcart.product_id,
+		});
 		if (check && check.quantity > 1) {
 			await shopModel.findOneAndUpdate(
-				{_id: req.body._id},
+				{product_id: shoppingcart.product_id},
 				{$inc: {quantity: -1}},
 				{new: true}
 			);
 			res.send("updated");
 		} else if (check && check.quantity === 1) {
-			await shopModel.findByIdAndDelete(req.body._id);
+			await shopModel.findByIdAndDelete(req.body.product_id);
 			res.send("product removed");
-		}
+        } else {
+            res.send("product does not exist")
+        }
 	} catch (error) {
 		console.log(error);
 	}
 });
 
-
 shoppingRouter.get("/cart", async (req, res, next) => {
 	try {
-		const shoppingcart = await shopModel.find().populate();
+		const shoppingcart = await shopModel.find();
 		res.send(shoppingcart);
 	} catch (error) {
 		console.log(error);
 	}
 });
-
 
 export default shoppingRouter;
