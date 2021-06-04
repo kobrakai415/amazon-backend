@@ -9,7 +9,7 @@ shoppingRouter.post("/cart/add", async (req, res, next) => {
 		const shoppingcart = product.toObject();
 		const check = await shopModel.findOne({
 			product_id: shoppingcart.product_id,
-        });
+		});
 		if (check) {
 			await shopModel.findOneAndUpdate(
 				{product_id: shoppingcart.product_id},
@@ -41,11 +41,11 @@ shoppingRouter.post("/cart/remove", async (req, res, next) => {
 			);
 			res.send("updated");
 		} else if (check && check.quantity === 1) {
-			await shopModel.findByIdAndDelete(req.body.product_id);
+			await shopModel.findByIdAndDelete(shoppingcart.product_id);
 			res.send("product removed");
-        } else {
-            res.send("product does not exist")
-        }
+		} else {
+			res.send("product does not exist");
+		}
 	} catch (error) {
 		console.log(error);
 	}
