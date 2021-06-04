@@ -41,7 +41,7 @@ shoppingRouter.post("/cart/remove", async (req, res, next) => {
 			);
 			res.send("updated");
 		} else if (check && check.quantity === 1) {
-			await shopModel.findByIdAndDelete(shoppingcart.product_id);
+			await shopModel.findByIdAndDelete(shoppingcart._id);
 			res.send("product removed");
 		} else {
 			res.send("product does not exist");
