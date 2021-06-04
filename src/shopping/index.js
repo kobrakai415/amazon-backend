@@ -53,7 +53,7 @@ shoppingRouter.post("/cart/remove", async (req, res, next) => {
 
 shoppingRouter.get("/cart", async (req, res, next) => {
 	try {
-		const shoppingcart = await shopModel.find();
+		const shoppingcart = await shopModel.find().populate("product_id");
 		res.send(shoppingcart);
 	} catch (error) {
 		console.log(error);
