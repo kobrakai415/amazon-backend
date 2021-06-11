@@ -1,23 +1,23 @@
 import express from "express"
 import cors from "cors"
 import listEndpoints from "express-list-endpoints"
-import productRoutes from "./products/products.js"
-import reviewRoutes from "./reviews/review.js"
+import productRoutes from "./products/index-sequelize.js"
+import reviewRoutes from "./reviews/index-sequelize.js"
+import categoryRoutes from "./category/index-sequelize.js"
 import {
     badRequestErrorHandler,
     forbiddenErrorHandler,
     notFoundErrorHandler,
     catchAllErrorHandler
 } from "./helpers/errorHandlers.js"
+import db from './helpers/sequelize.js'
 
-import logModel from "./schema/log.js"
-import mongoose from "mongoose"
 import createError from "http-errors"
 
 const server = express()
 const port = process.env.PORT || 3001
 
-const whitelist = [process.env.FRONTEND_DEV_URL, process.env.FRONTEND_PROD_URL, "bypass"]
+const whitelist = [process.env.FRONTEND_DEV_URL, /* process.env.FRONTEND_PROD_URL ,*/ "bypass"]
 const corsOptions = {
     origin: (origin, next) => {
         try {
@@ -36,33 +36,28 @@ server.use(cors(corsOptions))
 server.use(express.json())
 
 // ##### Global Middleware #####
-const logger = async (req, res, next) => {
-    try {
-        const entry = new logModel({
-            method: req.method,
-            query: req.query,
-            params: req.params,
-            body: req.body
-        })
-        await entry.save()
-        next()
-    } catch (error) {
-        next(error)
-    }
-}
-server.use(logger)
-
 server.use("/products", productRoutes)
 server.use("/reviews", reviewRoutes)
+server.use("/category", categoryRoutes);
 
 server.use(badRequestErrorHandler)
 server.use(forbiddenErrorHandler)
 server.use(notFoundErrorHandler)
 server.use(catchAllErrorHandler)
-
-mongoose.connect("mongodb://localhost:27017/demobase", { useNewUrlParser: true, useUnifiedTopology: true }).then(() => {
+console.table(listEndpoints(server))
+/* mongoose.connect("mongodb://localhost:27017/demobase", { useNewUrlParser: true, useUnifiedTopology: true }).then(() => {
     server.listen(port, () => {
         console.table(listEndpoints(server))
         console.log("server is running on port: ", port)
     })
 })
+ */
+
+db.sequelize
+    .sync({ force: false })
+    .then(() => {
+        server.listen(port, () => console.log('server is running on port', port))
+    })
+    .catch(e => {
+        server.on(err => console.log(err))
+    })
